@@ -1,0 +1,6 @@
+
+tal = [3, 7, 2, 9, 4]
+
+for t in tal:
+    if t > 5:
+        print(t)

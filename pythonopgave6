@@ -1,0 +1,46 @@
+# Liste med temperaturmålinger fra sensorer
+temperaturer = [21.5, 22.0, 21.5, 23.1, 22.0]
+
+# Dictionary med seneste måling fra hver sensor
+sensorer = {
+    "sensor_1": 21.5,
+    "sensor_2": 22.0,
+    "sensor_3": 23.1,
+}
+
+# Set med unikke temperaturer
+unikke_temperaturer = set(temperaturer)
+
+
+# Udskriv alle temperaturer i listen
+print("Alle temperaturer i listen:")
+for temp in temperaturer:
+    print(temp)
+
+# Udskriv alle sensorer og deres værdier
+print("\nSensorer og deres seneste måling:")
+for sensor, værdi in sensorer.items():
+    print(sensor, ":", værdi)
+
+# Udskriv alle unikke temperaturer
+print("\nUnikke temperaturer:")
+for temp in unikke_temperaturer:
+    print(temp)
+
+# --- Ekstra: Tilføj en ny måling til listen ---
+ny_måling = 24.2
+temperaturer.append(ny_måling)
+print("\nEfter at have tilføjet ny måling til listen:")
+print(temperaturer)
+
+# --- Opdater en sensor i dictionary ---
+sensorer["sensor_2"] = 23.5
+print("\nEfter opdatering af sensor_2:")
+for sensor, værdi in sensorer.items():
+    print(sensor, ":", værdi)
+
+# --- Regenerer set med unikke temperaturer ---
+unikke_temperaturer = set(temperaturer)
+print("\nOpdaterede unikke temperaturer:")
+for temp in unikke_temperaturer:
+    print(temp)

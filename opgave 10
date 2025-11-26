@@ -1,0 +1,23 @@
+import random
+
+# Lad programmet vælge et tilfældigt tal mellem 1 og 20
+hemmeligt_tal = random.randint(1, 20)
+
+maks_forsøg = 5  # maks antal gæt
+forsøg = 0
+
+print("Jeg tænker på et tal mellem 1 og 20. Kan du gætte det? Du har 5 forsøg.")
+
+while forsøg < maks_forsøg:
+    gæt = int(input("Skriv dit gæt: "))
+    forsøg += 1
+
+    if gæt < hemmeligt_tal:
+        print("For lavt!")
+    elif gæt > hemmeligt_tal:
+        print("For højt!")
+    else:
+        print(f"Tillykke, du gættede rigtigt på forsøg {forsøg}!")
+        break
+else:
+    print(f"Desværre, du har brugt alle dine forsøg. Tallet var {hemmeligt_tal}.")

@@ -1,0 +1,13 @@
+#opgave 4
+temp = float(input("Indtast temperatur i °C: "))
+
+# Tjek temperaturens kategori
+if temp < 0:
+    print("Det er frostvejr.")
+elif 0 <= temp < 10:
+    print("Det er koldt.")
+elif 10 <= temp < 20:
+    print("Det er mildt.")
+else:  # temp >= 20
+    print("Det er varmt.")
+

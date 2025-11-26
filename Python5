@@ -1,0 +1,16 @@
+# Opret liste med 5 heltal
+tal = [3, 7, 2, 9, 4]
+
+# For-loop: udskriv hvert tal og beregn summen
+sum_tal = 0
+for t in tal:
+    print("Tal:", t)
+    sum_tal += t
+
+print("Summen af tallene er:", sum_tal)
+
+# While-loop: tæl ned fra 10 til 0
+i = 10
+while i >= 0:
+    print(i)
+    i -= 1

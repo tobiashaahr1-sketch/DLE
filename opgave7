@@ -1,0 +1,19 @@
+# strings.py
+
+# Opret en streng
+tekst = "  Hello, World!  "  # med ekstra mellemrum for strip-eksemplet
+
+# Udskriv forskellige strengmetoder
+print("Original tekst:", tekst)
+print("Uppercase:", tekst.upper())
+print("Lowercase:", tekst.lower())
+print("Strip:", tekst.strip())  # fjerner ekstra mellemrum før/efter
+print("Replace 'World' med 'Python':", tekst.replace("World", "Python"))
+print("Split ved komma:", tekst.split(","))
+
+# Opret en liste af ord
+ord_liste = ["Python", "er", "sjovt"]
+
+# Saml listen til en streng med mellemrum
+samlet_tekst = " ".join(ord_liste)
+print("Samlet tekst fra liste:", samlet_tekst)

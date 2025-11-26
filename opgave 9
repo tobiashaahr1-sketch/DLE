@@ -1,0 +1,30 @@
+import time
+
+WELCOME_MESSAGE = "Velkommen til mit program"
+
+def menu():
+    print("1) Sig hej")
+    print("2) Vis tiden")
+    print("3) Hvor mange mennesker bor i Danmark")
+    print("4) Afslut")
+
+def say_hello():
+    name = input("Hvad hedder du? ")
+    print(f"Hej {name}!")
+
+if __name__ == "__main__":
+    print(WELCOME_MESSAGE)
+    while True:
+        menu()
+        choice = input("Vælg et punkt: ")
+        if choice == "1":
+            say_hello()
+        elif choice == "2":
+            print("Klokken er:", time.strftime("%H:%M:%S"))
+        elif choice == "3":
+            print("6 millioner mennesker bor i Danmark.")   
+        elif choice == "4":
+            print("Farvel!")
+            break
+        else:
+            print("Ugyldigt valg, prøv igen.")

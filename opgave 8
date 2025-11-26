@@ -1,0 +1,31 @@
+# functions.py
+
+# Funktion der lægger to tal sammen
+def add(a, b):
+    return a + b
+
+# Funktion der tjekker, om et tal er lige
+def is_even(n):
+    return n % 2 == 0
+
+# Funktion der hilser på en person
+def greet(name):
+    print(f"Hej {name}!")
+
+# Main-sektionen
+if __name__ == "__main__":
+    
+    # Kalder add-funktionen
+    resultat1 = add(5, 3)
+    print("5 + 3 =", resultat1)
+    
+    resultat2 = add(10, 20)
+    print("10 + 20 =", resultat2)
+    
+    # Kalder is_even-funktionen
+    print("Er 4 lige?", is_even(4))
+    print("Er 7 lige?", is_even(7))
+    
+    # Kalder greet-funktionen
+    greet("Alice")
+    greet("Bob")

@@ -1,0 +1,20 @@
+import requests
+
+# URL til API'en, der gætter alder ud fra navn
+url = "https://api.agify.io/?name=peter"
+
+# Sender HTTP GET-forespørgsel til API'en
+response = requests.get(url)
+
+# Statuskode fortæller om pip install requestsanmodningen lykkedes (200 = OK)
+print("Statuskode:", response.status_code)
+# JSON-svar fra API omdannes til Python-dict
+data = response.json()
+
+# Udskriv hele data
+print("Rå data:", data)
+
+# Udtræk felter fra dict
+print("Navn:", data["name"])
+print("Gættet alder:", data["age"])
+print("Antal personer i datasæt:", data["count"])

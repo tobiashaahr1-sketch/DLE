@@ -1,0 +1,3 @@
+temperaturer = [21.5, 22.0, 21.5, 23.1, 22.0]
+gennemsnit = sum(temperaturer) / len(temperaturer)
+print(f"Gennemsnitstemperaturen er {gennemsnit} grader.")
