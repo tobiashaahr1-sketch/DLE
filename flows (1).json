@@ -1,0 +1,681 @@
+[
+    {
+        "id": "8dfb23288c0bc081",
+        "type": "tab",
+        "label": "Flow 1",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "9be602fd7ec1a777",
+        "type": "mqtt in",
+        "z": "8dfb23288c0bc081",
+        "name": "",
+        "topic": "00-02-01-aa-53-bd",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "f4b1a4e4952e6689",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 110,
+        "y": 380,
+        "wires": [
+            [
+                "fbfac9eb42d9d9aa",
+                "f7d67bd33d8ff1ea"
+            ]
+        ]
+    },
+    {
+        "id": "fbfac9eb42d9d9aa",
+        "type": "function",
+        "z": "8dfb23288c0bc081",
+        "name": "function 2",
+        "func": "let payload = msg.payload.data.payload;\nlet result = {};\nvar msg1 = {payload:\"\",topic:\"\"}\n// Loop igennem alle porte\nfor (let key in payload) {\n    let item = payload[key];\n    let portName = key.replace(\"/iolinkmaster/\", \"\").replace(\"/iolinkdevice/pdin\", \"\").replace(/\\//g, \"_\");\n\n    if (item.data && typeof item.data === \"string\") {\n        let hexStr = item.data.trim();\n\n        if (/^[0-9A-Fa-f]+$/.test(hexStr)) {\n            if (portName === \"port[1]\" || portName === \"port[3]\") {\n                // Port1 og Port3: 2 målinger, 8 tegn hver\n                let meas1_hex = hexStr.substr(0, 8);\n                let meas2_hex = hexStr.substr(8, 8);\n\n                // Split hver måling i 2-byte ord\n                let port_word0 = parseInt(meas1_hex.substr(0, 4), 16);\n                let port_word2 = parseInt(meas2_hex.substr(0, 4), 16);\n\n                // Gem fladt med unikke navne\n                result[portName + \"_word0\"] = port_word0;\n                result[portName + \"_word2\"] = port_word2;\n            } else {\n                // Andre porte: enkel 2-byte måling\n                result[portName] = parseInt(hexStr, 16);\n            }\n        } else {\n            result[portName] = hexStr;\n        }\n    } else {\n        result[portName] = item.code;\n    }\n}\n\n// Timer-counter\nif (payload[\"/timer[1]/counter\"]) {\n    result[\"timer1_counter\"] = payload[\"/timer[1]/counter\"].data;\n}\n\nmsg.payload = result;\nmsg1.payload = {\n    timestamp: Date.now(),\n    p1:msg.payload[\"port[1]_word0\"] *0.001,  \n    p2:msg.payload[\"port[2]\"] *0.01,\n    p3:msg.payload[\"port[3]_word0\"] *0.001,\n    p4:msg.payload[\"port[4]\"] *0.01,\n    p6:msg.payload[\"port[6]\"] *0.01,\n    p8:msg.payload[\"port[8]\"] *0.01,\n    t1:msg.payload[\"port[1]_word2\"] *0.01,\n    t3:msg.payload[\"port[3]_word2\"] *0.01,\n    }\nreturn [msg,msg1];\n",
+        "outputs": 2,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 240,
+        "y": 300,
+        "wires": [
+            [
+                "ee90d486b89292bc"
+            ],
+            [
+                "23111d24a7b17a3b",
+                "57aaaff3cca425e1",
+                "54bc310813fc57d2",
+                "d4beeb9691f7cbbd",
+                "f8bd74133a2da44b",
+                "74dc729e5a2716f9",
+                "2213c38c0d39afe2",
+                "368544b5e19bf4e5",
+                "bfc6020babfaca0f",
+                "634fd640d2ad9906",
+                "73cf3f759e6544c2"
+            ]
+        ]
+    },
+    {
+        "id": "ee90d486b89292bc",
+        "type": "debug",
+        "z": "8dfb23288c0bc081",
+        "name": "debug 4",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 520,
+        "y": 280,
+        "wires": []
+    },
+    {
+        "id": "23111d24a7b17a3b",
+        "type": "debug",
+        "z": "8dfb23288c0bc081",
+        "name": "Værdier der er skaleret",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 540,
+        "y": 320,
+        "wires": []
+    },
+    {
+        "id": "f7d67bd33d8ff1ea",
+        "type": "debug",
+        "z": "8dfb23288c0bc081",
+        "name": "debug 6",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 400,
+        "y": 440,
+        "wires": []
+    },
+    {
+        "id": "73cf3f759e6544c2",
+        "type": "function",
+        "z": "8dfb23288c0bc081",
+        "name": "function 3",
+        "func": "// Lav en ny besked\nlet newMsg1 = {\n    topic: \"p1/value\",\n    payload: msg.payload.p1  // trækker kun p1 ud\n};\n\nreturn newMsg1;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 700,
+        "y": 400,
+        "wires": [
+            [
+                "a8e762e10fe74570"
+            ]
+        ]
+    },
+    {
+        "id": "a8e762e10fe74570",
+        "type": "ui_chart",
+        "z": "8dfb23288c0bc081",
+        "name": "",
+        "group": "b91f0dc358ac58aa",
+        "order": 4,
+        "width": 0,
+        "height": 0,
+        "label": "chart",
+        "chartType": "bar",
+        "legend": "false",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "",
+        "ymax": "",
+        "removeOlder": 1,
+        "removeOlderPoints": "",
+        "removeOlderUnit": "3600",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "className": "",
+        "x": 890,
+        "y": 500,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "57aaaff3cca425e1",
+        "type": "function",
+        "z": "8dfb23288c0bc081",
+        "name": "function 4",
+        "func": "// Lav en ny besked\nlet newMsg2 = {\n    topic: \"p2/value\",\n    payload: msg.payload.p2  // trækker kun p1 ud\n};\n\nreturn newMsg2;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 700,
+        "y": 440,
+        "wires": [
+            [
+                "a8e762e10fe74570"
+            ]
+        ]
+    },
+    {
+        "id": "54bc310813fc57d2",
+        "type": "function",
+        "z": "8dfb23288c0bc081",
+        "name": "function 5",
+        "func": "// Lav en ny besked\nlet newMsg3 = {\n    topic: \"p3/value\",\n    payload: msg.payload.p3  // trækker kun p1 ud\n};\n\nreturn newMsg3;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 700,
+        "y": 480,
+        "wires": [
+            [
+                "a8e762e10fe74570"
+            ]
+        ]
+    },
+    {
+        "id": "d4beeb9691f7cbbd",
+        "type": "function",
+        "z": "8dfb23288c0bc081",
+        "name": "function 6",
+        "func": "// Lav en ny besked\nlet newMsg4 = {\n    topic: \"p4/value\",\n    payload: msg.payload.p4  // trækker kun p1 ud\n};\n\nreturn newMsg4;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 700,
+        "y": 520,
+        "wires": [
+            [
+                "a8e762e10fe74570"
+            ]
+        ]
+    },
+    {
+        "id": "f8bd74133a2da44b",
+        "type": "function",
+        "z": "8dfb23288c0bc081",
+        "name": "function 7",
+        "func": "// Lav en ny besked\nlet newMsg6 = {\n    topic: \"p6/value\",\n    payload: msg.payload.p6  // trækker kun p1 ud\n};\n\nreturn newMsg6;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 700,
+        "y": 560,
+        "wires": [
+            [
+                "a8e762e10fe74570"
+            ]
+        ]
+    },
+    {
+        "id": "74dc729e5a2716f9",
+        "type": "function",
+        "z": "8dfb23288c0bc081",
+        "name": "function 8",
+        "func": "// Lav en ny besked\nlet newMsg8 = {\n    topic: \"p8/value\",\n    payload: msg.payload.p8  // trækker kun p1 ud\n};\n\nreturn newMsg8;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 700,
+        "y": 600,
+        "wires": [
+            [
+                "a8e762e10fe74570"
+            ]
+        ]
+    },
+    {
+        "id": "2213c38c0d39afe2",
+        "type": "function",
+        "z": "8dfb23288c0bc081",
+        "name": "function 9",
+        "func": "// Lav en ny besked\nlet newMsg10 = {\n    topic: \"t1/value\",\n    payload: msg.payload.t1  // trækker kun p1 ud\n};\n\nreturn newMsg10;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 240,
+        "y": 500,
+        "wires": [
+            [
+                "23cd0a0048befb11"
+            ]
+        ]
+    },
+    {
+        "id": "368544b5e19bf4e5",
+        "type": "function",
+        "z": "8dfb23288c0bc081",
+        "name": "function 10",
+        "func": "// Lav en ny besked\nlet newMsg11 = {\n    topic: \"t3/value\",\n    payload: msg.payload.t3  // trækker kun p1 ud\n};\n\nreturn newMsg11;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 250,
+        "y": 560,
+        "wires": [
+            [
+                "23cd0a0048befb11"
+            ]
+        ]
+    },
+    {
+        "id": "23cd0a0048befb11",
+        "type": "ui_chart",
+        "z": "8dfb23288c0bc081",
+        "name": "",
+        "group": "e88d5621e0c4da9b",
+        "order": 0,
+        "width": 0,
+        "height": 0,
+        "label": "chart",
+        "chartType": "bar",
+        "legend": "false",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "0",
+        "ymax": "70",
+        "removeOlder": 1,
+        "removeOlderPoints": "",
+        "removeOlderUnit": "3600",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "className": "",
+        "x": 450,
+        "y": 540,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "6c4a50c2bcb7ca92",
+        "type": "zmysql",
+        "z": "8dfb23288c0bc081",
+        "d": true,
+        "mydb": "",
+        "name": "",
+        "x": 1050,
+        "y": 240,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "58aeb966d18cc8fc",
+        "type": "inject",
+        "z": "8dfb23288c0bc081",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 700,
+        "y": 240,
+        "wires": [
+            [
+                "18e8fd328ab23f8d"
+            ]
+        ]
+    },
+    {
+        "id": "18e8fd328ab23f8d",
+        "type": "function",
+        "z": "8dfb23288c0bc081",
+        "name": "lav en database",
+        "func": "\nmsg.topic=\"CREATE TABLE tjorring10 (time_ varchar(255), p1 varchar(255), p2 varchar(255), p3 varchar(255), p4 varchar(255), p6 varchar(255), p8 varchar(255), t1 varchar(255), t3 varchar(255));\"  \nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 880,
+        "y": 240,
+        "wires": [
+            [
+                "6c4a50c2bcb7ca92"
+            ]
+        ]
+    },
+    {
+        "id": "e5b065ac25e32677",
+        "type": "zmysql",
+        "z": "8dfb23288c0bc081",
+        "d": true,
+        "mydb": "",
+        "name": "",
+        "x": 790,
+        "y": 680,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "bfc6020babfaca0f",
+        "type": "function",
+        "z": "8dfb23288c0bc081",
+        "name": "function 11",
+        "func": "msg.topic = \"INSERT INTO tjorring10 VALUES (\" +Date.now()+ \",\" + String(msg.payload.p1.toFixed(2)) + \",\" + String(msg.payload.p2.toFixed(2)) + \",\" + String(msg.payload.p3.toFixed(2)) + \",\" + String(msg.payload.p4.toFixed(2)) + \",\" + String(msg.payload.p6.toFixed(2)) + \",\" + String(msg.payload.p8.toFixed(2)) + \",\" + String(msg.payload.t1.toFixed(2)) + \",\" + String(msg.payload.t3.toFixed(2))+\");\"\n\nreturn msg",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 530,
+        "y": 720,
+        "wires": [
+            [
+                "10bd06cae9d5e081",
+                "e5b065ac25e32677"
+            ]
+        ]
+    },
+    {
+        "id": "0aabba81d1011961",
+        "type": "zmysql",
+        "z": "8dfb23288c0bc081",
+        "d": true,
+        "mydb": "",
+        "name": "",
+        "x": 1550,
+        "y": 120,
+        "wires": [
+            [
+                "6aa30aa90aba9756"
+            ]
+        ]
+    },
+    {
+        "id": "3ed6864c84609528",
+        "type": "inject",
+        "z": "8dfb23288c0bc081",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 1140,
+        "y": 120,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "6aa30aa90aba9756",
+        "type": "debug",
+        "z": "8dfb23288c0bc081",
+        "name": "debug 5",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1720,
+        "y": 120,
+        "wires": []
+    },
+    {
+        "id": "10bd06cae9d5e081",
+        "type": "debug",
+        "z": "8dfb23288c0bc081",
+        "name": "debug 7",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "topic",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 780,
+        "y": 760,
+        "wires": []
+    },
+    {
+        "id": "634fd640d2ad9906",
+        "type": "function",
+        "z": "8dfb23288c0bc081",
+        "name": "function 1",
+        "func": "// Vælg hvilke værdier du vil sende\nvar fields = {\n    field1: msg.payload.p1,\n    field2: msg.payload.p2,\n    field3: msg.payload.p3,\n    field4: msg.payload.p4,\n    field5: msg.payload.p6,\n    field6: msg.payload.p8,\n    field7: msg.payload.t1,\n    field8: msg.payload.t3\n};\n\nvar apiKey = \"0S8DI0F48N1T81VQ\";\n\n// Byg URL\nvar url = \"https://api.thingspeak.com/update?api_key=\" + apiKey;\nfor (var f in fields) {\n    if (fields[f] !== undefined) {\n        url += \"&\" + f + \"=\" + fields[f];\n    }\n}\n\nmsg.url = url;\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 320,
+        "y": 680,
+        "wires": [
+            [
+                "0bcd6a107311624b"
+            ]
+        ]
+    },
+    {
+        "id": "0bcd6a107311624b",
+        "type": "http request",
+        "z": "8dfb23288c0bc081",
+        "name": "",
+        "method": "GET",
+        "ret": "txt",
+        "paytoqs": "ignore",
+        "url": "",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 290,
+        "y": 760,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "1f43f90da59902ee",
+        "type": "ui_spacer",
+        "z": "8dfb23288c0bc081",
+        "name": "spacer",
+        "group": "b91f0dc358ac58aa",
+        "order": 4,
+        "width": 3,
+        "height": 1
+    },
+    {
+        "id": "5f9ca67e3a9005f0",
+        "type": "ui_spacer",
+        "z": "8dfb23288c0bc081",
+        "name": "spacer",
+        "group": "b91f0dc358ac58aa",
+        "order": 5,
+        "width": 9,
+        "height": 1
+    },
+    {
+        "id": "d3557e5c125b89b4",
+        "type": "ui_spacer",
+        "z": "8dfb23288c0bc081",
+        "name": "spacer",
+        "group": "b91f0dc358ac58aa",
+        "order": 6,
+        "width": 9,
+        "height": 1
+    },
+    {
+        "id": "36a5f1fec3d51c3f",
+        "type": "ui_spacer",
+        "z": "8dfb23288c0bc081",
+        "name": "spacer",
+        "group": "b91f0dc358ac58aa",
+        "order": 7,
+        "width": 9,
+        "height": 1
+    },
+    {
+        "id": "f4b1a4e4952e6689",
+        "type": "mqtt-broker",
+        "name": "",
+        "broker": "142.93.135.2",
+        "port": 1883,
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": false,
+        "protocolVersion": 4,
+        "keepalive": 60,
+        "cleansession": true,
+        "autoUnsubscribe": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthRetain": "false",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closeRetain": "false",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willRetain": "false",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    },
+    {
+        "id": "b91f0dc358ac58aa",
+        "type": "ui_group",
+        "name": "Default",
+        "tab": "862b3ac060f76d8d",
+        "order": 2,
+        "disp": true,
+        "width": 21,
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "e88d5621e0c4da9b",
+        "type": "ui_group",
+        "name": "Group 1",
+        "tab": "3fe4af2696490469",
+        "order": 1,
+        "disp": true,
+        "width": 6
+    },
+    {
+        "id": "862b3ac060f76d8d",
+        "type": "ui_tab",
+        "name": "Home",
+        "icon": "dashboard",
+        "disabled": false,
+        "hidden": false
+    },
+    {
+        "id": "3fe4af2696490469",
+        "type": "ui_tab",
+        "name": "Tab 2",
+        "icon": "dashboard",
+        "order": 2
+    }
+]
